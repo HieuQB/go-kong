@@ -88,12 +88,18 @@ func (s *PluginService) Get(ctx context.Context,
 func (s *PluginService) Update(ctx context.Context,
 	plugin *Plugin) (*Plugin, error) {
 
-	if isEmptyString(plugin.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+	keyPlugin := *plugin.Name
+	endpoint := ""
+	if !isEmptyString(plugin.ID) {
+		keyPlugin = *plugin.ID
+	}
+	if plugin.Service != nil {
+		endpoint = fmt.Sprintf("/services/%v/plugins/%v",plugin.Service.ID, keyPlugin)
+	} else {
+		endpoint = fmt.Sprintf("/plugins/%v", keyPlugin)
 	}
 
-	endpoint := fmt.Sprintf("/plugins/%v", *plugin.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, plugin)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, plugin)
 	if err != nil {
 		return nil, err
 	}

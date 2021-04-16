@@ -103,13 +103,20 @@ func (s *RouteService) Update(ctx context.Context,
 	if route == nil {
 		return nil, errors.New("cannot update a nil route")
 	}
-
+	routeKey := ""
+	endpoint := ""
 	if isEmptyString(route.ID) {
-		return nil, errors.New("ID cannot be nil for Update operation")
+		routeKey = *route.Name
+	} else {
+		routeKey = *route.ID
+	}
+	if route.Service != nil {
+		endpoint = fmt.Sprintf("/services/%v/routes/%v", *route.Service.ID, routeKey)
+	} else {
+		endpoint = fmt.Sprintf("/routes/%v", routeKey)
 	}
 
-	endpoint := fmt.Sprintf("/routes/%v", *route.ID)
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, route)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, route)
 	if err != nil {
 		return nil, err
 	}

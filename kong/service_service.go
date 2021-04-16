@@ -117,17 +117,17 @@ func (s *Svcservice) Update(ctx context.Context,
 		endpoint = fmt.Sprintf("/services/%v", *service.ID)
 	}
 
-	req, err := s.client.NewRequest("PATCH", endpoint, nil, service)
+	req, err := s.client.NewRequest("PUT", endpoint, nil, service)
 	if err != nil {
 		return nil, err
 	}
 
-	var updatedService Service
-	_, err = s.client.Do(ctx, req, &updatedService)
+	//var updatedService Service
+	_, err = s.client.Do(ctx, req, service)
 	if err != nil {
 		return nil, err
 	}
-	return &updatedService, nil
+	return service, nil
 }
 
 // Delete deletes an Service in Kong
